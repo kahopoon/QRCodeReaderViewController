@@ -114,6 +114,8 @@
       if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(reader:didScanResult:)]) {
         [weakSelf.delegate reader:weakSelf didScanResult:resultAsString];
       }
+        
+      [self.cameraView setQRCodeFrameOn];
     }];
   }
   return self;
