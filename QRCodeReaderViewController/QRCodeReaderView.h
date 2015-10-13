@@ -33,4 +33,6 @@
  */
 @interface QRCodeReaderView : UIView
 
+- (void)setQRCodeFrameOn;
+
 @end
