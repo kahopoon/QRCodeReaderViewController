@@ -11,9 +11,7 @@ Pod::Spec.new do |s|
                               :tag => s.version.to_s }
   s.requires_arc          = true
   s.source_files          = ['QRCodeReaderViewController/*.{h,m}']
-  s.resource_bundles = {
-    'Images' => ['QRCodeReaderViewController/Images.xcassets/*']
-  }
+  s.resources             = 'QRCodeReaderViewController/Images.xcassets'
   s.framework             = 'AVFoundation'
   s.ios.deployment_target = '7.0'
 end
