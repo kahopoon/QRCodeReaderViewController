@@ -215,5 +215,5 @@
  * @since 3.0.0
  */
 @property (strong, nonatomic, readonly) QRCodeReader * __nonnull codeReader;
-
+@property (nonatomic)  BOOL isLandscapeModeSupport;
 @end
