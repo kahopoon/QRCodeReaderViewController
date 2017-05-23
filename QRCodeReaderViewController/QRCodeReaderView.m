@@ -98,42 +98,50 @@
     [self addSubview:onFrameImageView];
     _onFrameImageView = onFrameImageView;
     
-    [self setupAutoLayoutConstraints];
+    //[self setupAutoLayoutConstraints];
+    [self setupAutoLayoutConstraintsWithOrientation];
 }
 
-- (void)setupAutoLayoutConstraints
+- (void)setupAutoLayoutConstraints:(BOOL)isLandscape
 {
 //    NSDictionary *views = NSDictionaryOfVariableBindings(_offFrameImageView, _onFrameImageView);
     NSDictionary *views = NSDictionaryOfVariableBindings(_offFrameImageView);
     
+    [self removeConstraints:[self constraints]];
+    [_offFrameImageView removeConstraints:[_offFrameImageView constraints]];
+    [_onFrameImageView removeConstraints:[_onFrameImageView constraints]];
+
+    NSString *offFrameImageViewConstraitFormat =[NSString stringWithFormat:@"%@%@", isLandscape ? @"V":@"H", @":|-50-[_offFrameImageView]-50-|"];
+    NSString *onFrameImageViewConstraitFormat =[NSString stringWithFormat:@"%@%@", isLandscape ? @"V":@"H", @":|-50-[_onFrameImageView]-50-|"];
+    
     [self addConstraints:
-     [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-50-[_offFrameImageView]-50-|" options:0 metrics:nil views:views]];
+     [NSLayoutConstraint constraintsWithVisualFormat:offFrameImageViewConstraitFormat options:0 metrics:nil views:views]];
     [self addConstraint:
-     [NSLayoutConstraint constraintWithItem:_offFrameImageView
-                                  attribute:NSLayoutAttributeCenterY
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:self
-                                  attribute:NSLayoutAttributeCenterY
-                                 multiplier:1
-                                   constant:0]];
+    [NSLayoutConstraint constraintWithItem:_offFrameImageView
+                                 attribute:isLandscape ? NSLayoutAttributeCenterX : NSLayoutAttributeCenterY
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self
+                                 attribute:isLandscape ? NSLayoutAttributeCenterX : NSLayoutAttributeCenterY
+                                multiplier:1
+                                  constant:0]];
     [_offFrameImageView addConstraint:
      [NSLayoutConstraint constraintWithItem:_offFrameImageView
                                   attribute:NSLayoutAttributeWidth
                                   relatedBy:NSLayoutRelationEqual
                                      toItem:_offFrameImageView
                                   attribute:NSLayoutAttributeHeight
-                                 multiplier:1
+                                 multiplier:isLandscape ? 0.2 : 1
                                    constant:0]];
     
     views = NSDictionaryOfVariableBindings(_onFrameImageView);
     [self addConstraints:
-     [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-50-[_onFrameImageView]-50-|" options:0 metrics:nil views:views]];
+     [NSLayoutConstraint constraintsWithVisualFormat:onFrameImageViewConstraitFormat options:0 metrics:nil views:views]];
     [self addConstraint:
      [NSLayoutConstraint constraintWithItem:_onFrameImageView
-                                  attribute:NSLayoutAttributeCenterY
+                                  attribute:isLandscape ? NSLayoutAttributeCenterX : NSLayoutAttributeCenterY
                                   relatedBy:NSLayoutRelationEqual
                                      toItem:self
-                                  attribute:NSLayoutAttributeCenterY
+                                  attribute:isLandscape ? NSLayoutAttributeCenterX : NSLayoutAttributeCenterY
                                  multiplier:1
                                    constant:0]];
     [_onFrameImageView addConstraint:
@@ -142,8 +150,34 @@
                                   relatedBy:NSLayoutRelationEqual
                                      toItem:_onFrameImageView
                                   attribute:NSLayoutAttributeHeight
-                                 multiplier:1
+                                 multiplier:isLandscape ? 0.2 : 1
                                    constant:0]];
+}
+
+- (void)setupAutoLayoutConstraintsWithOrientation {
+    BOOL deviceOrientationLandscape;
+    
+    switch ([UIDevice currentDevice].orientation) {
+        case UIDeviceOrientationPortrait:
+            deviceOrientationLandscape = NO;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            deviceOrientationLandscape = NO;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            deviceOrientationLandscape = YES;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            deviceOrientationLandscape = YES;
+            break;
+        default:
+            if ([self constraints].count == 0) {
+                [self setupAutoLayoutConstraints:NO];
+            }
+            return;
+    }
+    
+    [self setupAutoLayoutConstraints:deviceOrientationLandscape];
 }
 
 @end
