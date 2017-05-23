@@ -200,6 +200,9 @@
 
     _codeReader.previewLayer.connection.videoOrientation = [QRCodeReader videoOrientationFromInterfaceOrientation:
                                                             orientation];
+    if (_isLandscapeModeSupport) {
+          [_cameraView setupAutoLayoutConstraintsWithOrientation];
+    }
   }
 }
 
