@@ -34,5 +34,6 @@
 @interface QRCodeReaderView : UIView
 
 - (void)setQRCodeFrameOn;
+- (void)setupAutoLayoutConstraintsWithOrientation;
 
 @end
