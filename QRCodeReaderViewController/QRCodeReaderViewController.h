@@ -171,6 +171,12 @@
  */
 + (nonnull instancetype)readerWithCancelButtonTitle:(nullable NSString *)cancelTitle codeReader:(nonnull QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton;
 
+
+- (nonnull id)initWithCancelButtonTitle:(nullable NSString *)cancelTitle codeReader:(nonnull QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton defaultOrientation:(nullable NSString *)defaultOrientation dynamicOrientationSupport:(BOOL)dynamicOrientationSupport;
+
++ (nonnull instancetype)readerWithCancelButtonTitle:(nullable NSString *)cancelTitle codeReader:(nonnull QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton defaultOrientation:(nullable NSString *)defaultOrientation dynamicOrientationSupport:(BOOL)dynamicOrientationSupport;
+
+
 #pragma mark - Controlling the Reader
 /** @name Controlling the Reader */
 
@@ -215,5 +221,7 @@
  * @since 3.0.0
  */
 @property (strong, nonatomic, readonly) QRCodeReader * __nonnull codeReader;
-@property (nonatomic)  BOOL isLandscapeModeSupport;
+@property (nonatomic, strong) NSString * _Nullable defaultOrientation;
+@property (nonatomic)  BOOL dynamicOrientationSupport;
+
 @end

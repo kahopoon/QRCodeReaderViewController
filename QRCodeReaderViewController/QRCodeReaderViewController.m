@@ -86,39 +86,46 @@
 
 - (id)initWithCancelButtonTitle:(nullable NSString *)cancelTitle codeReader:(nonnull QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton
 {
-  if ((self = [super init])) {
-    self.view.backgroundColor   = [UIColor blackColor];
-    self.codeReader             = codeReader;
-    self.startScanningAtLoad    = startScanningAtLoad;
-    self.showSwitchCameraButton = showSwitchCameraButton;
-    self.showTorchButton        = showTorchButton;
+    return [self initWithCancelButtonTitle:cancelTitle codeReader:codeReader startScanningAtLoad:startScanningAtLoad showSwitchCameraButton:showSwitchCameraButton showTorchButton:showTorchButton defaultOrientation:orientationPortrait dynamicOrientationSupport:NO];
+}
 
-//    if (cancelTitle == nil) {
-//      cancelTitle = NSLocalizedString(@"Cancel", @"Cancel");
-//    }
-
-    [self setupUIComponentsWithCancelButtonTitle:cancelTitle];
-    [self setupAutoLayoutConstraints];
-
-    [_cameraView.layer insertSublayer:_codeReader.previewLayer atIndex:0];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
-
-    __weak typeof(self) weakSelf = self;
-
-    [codeReader setCompletionWithBlock:^(NSString *resultAsString) {
-      if (weakSelf.completionBlock != nil) {
-        weakSelf.completionBlock(resultAsString);
-      }
-
-      if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(reader:didScanResult:)]) {
-        [weakSelf.delegate reader:weakSelf didScanResult:resultAsString];
-      }
+- (id)initWithCancelButtonTitle:(nullable NSString *)cancelTitle codeReader:(nonnull QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton defaultOrientation:(nullable NSString *)defaultOrientation dynamicOrientationSupport:(BOOL)dynamicOrientationSupport
+{
+    if ((self = [super init])) {
+        self.view.backgroundColor       = [UIColor blackColor];
+        self.codeReader                 = codeReader;
+        self.startScanningAtLoad        = startScanningAtLoad;
+        self.showSwitchCameraButton     = showSwitchCameraButton;
+        self.showTorchButton            = showTorchButton;
+        self.defaultOrientation         = defaultOrientation;
+        self.dynamicOrientationSupport  = dynamicOrientationSupport;
         
-      [self.cameraView setQRCodeFrameOn];
-    }];
-  }
-  return self;
+        //    if (cancelTitle == nil) {
+        //      cancelTitle = NSLocalizedString(@"Cancel", @"Cancel");
+        //    }
+        
+        [self setupUIComponentsWithCancelButtonTitle:cancelTitle];
+        [self setupAutoLayoutConstraints];
+        
+        [_cameraView.layer insertSublayer:_codeReader.previewLayer atIndex:0];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
+        
+        __weak typeof(self) weakSelf = self;
+        
+        [codeReader setCompletionWithBlock:^(NSString *resultAsString) {
+            if (weakSelf.completionBlock != nil) {
+                weakSelf.completionBlock(resultAsString);
+            }
+            
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(reader:didScanResult:)]) {
+                [weakSelf.delegate reader:weakSelf didScanResult:resultAsString];
+            }
+            
+            [self.cameraView setQRCodeFrameOn];
+        }];
+    }
+    return self;
 }
 
 + (instancetype)readerWithCancelButtonTitle:(NSString *)cancelTitle
@@ -149,6 +156,11 @@
 + (instancetype)readerWithCancelButtonTitle:(NSString *)cancelTitle codeReader:(QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton
 {
   return [[self alloc] initWithCancelButtonTitle:cancelTitle codeReader:codeReader startScanningAtLoad:startScanningAtLoad showSwitchCameraButton:showSwitchCameraButton showTorchButton:showTorchButton];
+}
+
++ (instancetype)readerWithCancelButtonTitle:(NSString *)cancelTitle codeReader:(QRCodeReader *)codeReader startScanningAtLoad:(BOOL)startScanningAtLoad showSwitchCameraButton:(BOOL)showSwitchCameraButton showTorchButton:(BOOL)showTorchButton defaultOrientation:(nullable NSString *)defaultOrientation dynamicOrientationSupport:(BOOL)dynamicOrientationSupport
+{
+    return [[self alloc] initWithCancelButtonTitle:cancelTitle codeReader:codeReader startScanningAtLoad:startScanningAtLoad showSwitchCameraButton:showSwitchCameraButton showTorchButton:showTorchButton defaultOrientation:defaultOrientation dynamicOrientationSupport:dynamicOrientationSupport];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -200,9 +212,7 @@
 
     _codeReader.previewLayer.connection.videoOrientation = [QRCodeReader videoOrientationFromInterfaceOrientation:
                                                             orientation];
-    if (_isLandscapeModeSupport) {
-          [_cameraView setupAutoLayoutConstraintsWithOrientation];
-    }
+    [_cameraView setupAutoLayoutConstraintsWithOrientation];
   }
 }
 
@@ -217,7 +227,9 @@
 
 - (void)setupUIComponentsWithCancelButtonTitle:(NSString *)cancelButtonTitle
 {
-  self.cameraView                                       = [[QRCodeReaderView alloc] init];
+  self.cameraView                                       = [[QRCodeReaderView alloc] initWithFrame:self.view.frame
+                                                                               defaultOrientation:_defaultOrientation
+                                                                        dynamicOrientationSupport:_dynamicOrientationSupport];
   _cameraView.translatesAutoresizingMaskIntoConstraints = NO;
   _cameraView.clipsToBounds                             = YES;
   [self.view addSubview:_cameraView];
@@ -320,5 +332,7 @@
 {
   [_codeReader toggleTorch];
 }
+
+
 
 @end

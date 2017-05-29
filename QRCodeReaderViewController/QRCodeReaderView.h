@@ -31,8 +31,16 @@
  * code.
  * @since 2.0.0
  */
+
+static NSString *const orientationLandscape = @"orientationLandscape";
+static NSString *const orientationPortrait = @"orientationPortrait";
+
 @interface QRCodeReaderView : UIView
 
+@property (nonatomic, strong) NSString *defaultOrientation;
+@property (nonatomic)  BOOL dynamicOrientationSupport;
+
+- (id)initWithFrame:(CGRect)frame defaultOrientation:(NSString *)defaultOrientation dynamicOrientationSupport:(BOOL)dynamicOrientationSupport;
 - (void)setQRCodeFrameOn;
 - (void)setupAutoLayoutConstraintsWithOrientation;
 
